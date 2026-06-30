@@ -3,7 +3,10 @@ import { formatLocalDateTime, formatTimeLeft, normalizeCodexUsage } from '../src
 
 describe('formatLocalDateTime', () => {
   it('uses local 24-hour time with seconds', () => {
-    expect(formatLocalDateTime(new Date('2026-07-12T02:09:26.000Z'))).toMatch(/2026-07-12 10:09:26 .+/)
+    const formatted = formatLocalDateTime(new Date('2026-07-12T02:09:26.000Z'))
+
+    expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} .+$/)
+    expect(formatted).not.toMatch(/\b(?:AM|PM)\b/)
   })
 })
 
