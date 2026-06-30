@@ -14,7 +14,13 @@
   "bugs": {
     "url": "https://github.com/jinghaihan/codex-credits/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "codex",
+    "usage",
+    "reset",
+    "credits",
+    "expired"
+  ],
   "exports": {
     ".": "./dist/index.mjs",
     "./cli": "./dist/cli.mjs",
