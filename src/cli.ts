@@ -1,28 +1,45 @@
-import type { CAC } from 'cac'
 import type { CommandOptions } from './types'
 import process from 'node:process'
-import * as p from '@clack/prompts'
-import c from 'ansis'
 import { cac } from 'cac'
 import { NAME, VERSION } from './constants'
+import { getCodexCredits } from './core/api'
+import { renderCodexCredits } from './core/render'
+import { CodexCreditsError } from './errors'
 
-try {
-  const cli: CAC = cac(NAME)
+async function main() {
+  const cli = cac(NAME)
+
+  cli.option('--auth <path>', 'Path to Codex auth JSON')
 
   cli
-    .command('', 'Command description')
-    .allowUnknownOptions()
-    .action(async (options: Partial<CommandOptions>) => {
-      p.intro(`${c.yellow`${NAME} `}${c.dim`v${VERSION}`}`)
+    .command('', 'Check Codex reset credits and usage windows')
+    .action(async (options: CommandOptions) => {
+      const data = await getCodexCredits(options.auth)
 
-      console.log(options)
+      process.stdout.write(renderCodexCredits(data))
     })
 
   cli.help()
   cli.version(VERSION)
-  cli.parse()
+
+  cli.parse(process.argv, { run: false })
+  await cli.runMatchedCommand()
+}
+
+try {
+  await main()
 }
 catch (error) {
-  console.error(error)
+  if (error instanceof CodexCreditsError) {
+    console.error(`error: ${error.message}`)
+    process.exit(error.exitCode)
+  }
+
+  if (error instanceof Error) {
+    console.error(`error: ${error.message}`)
+    process.exit(1)
+  }
+
+  console.error('error: unexpected failure')
   process.exit(1)
 }

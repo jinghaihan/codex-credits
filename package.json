@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@10.33.2",
-  "description": "",
+  "description": "Check Codex reset credits and usage windows.",
   "author": "jinghaihan",
   "license": "MIT",
   "homepage": "https://github.com/jinghaihan/codex-credits#readme",
@@ -28,6 +28,9 @@
     "bin",
     "dist"
   ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "tsx ./src/cli.ts",
     "build": "tsdown",
@@ -42,10 +45,9 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "@clack/prompts": "catalog:prod",
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
-    "pathe": "catalog:prod"
+    "undici": "catalog:prod"
   },
   "devDependencies": {
     "tsdown": "catalog:build",

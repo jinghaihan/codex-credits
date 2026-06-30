@@ -7,11 +7,32 @@
 
 ## Usage
 
-**No data**
+```bash
+npx codex-credits
+```
 
-## Configuration
+Use a custom Codex auth file:
 
-**No data**
+```bash
+npx codex-credits --auth ~/.codex/auth.json
+```
+
+The CLI reads `tokens.access_token` from the Codex auth file and checks reset credits plus usage reset windows. Output is English-only, uses local time, and never prints tokens, cookies, or authorization headers.
+
+Example output:
+
+```text
+Codex has 3 reset credits.
+
+Next one expires 2026-07-12 10:09:26 GMT+8
+11d 13h left
+
+01  2026-06-12 10:09:26 GMT+8 -> 2026-07-12 10:09:26 GMT+8
+02  2026-06-18 08:37:46 GMT+8 -> 2026-07-18 08:37:46 GMT+8
+03  2026-06-27 07:48:09 GMT+8 -> 2026-07-27 07:48:09 GMT+8
+
+Usage: 5h 97% left, resets in 4h 36m, 7d 80% left, resets in 6d 13h
+```
 
 ## License
 
