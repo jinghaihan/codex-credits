@@ -1,11 +1,12 @@
 import type { CodexUsage, RenderOptions, UsageWindow } from '../types'
 import c from 'ansis'
-import { formatLocalDateTime, formatTimeLeft, plural } from '../utils'
+import { formatLocalDateTime, formatLocalDateTimeWithoutZone, formatTimeLeft } from '../utils'
 
 export function renderCodexCredits(data: CodexUsage, options: RenderOptions = {}) {
   const color = options.color ?? true
   const paint = {
-    cyan: (value: string) => color ? c.cyan(value) : value,
+    dim: (value: string) => color ? c.dim(value) : value,
+    green: (value: string) => color ? c.green(value) : value,
     red: (value: string) => color ? c.red(value) : value,
     yellow: (value: string) => color ? c.yellow(value) : value,
   }
@@ -13,51 +14,62 @@ export function renderCodexCredits(data: CodexUsage, options: RenderOptions = {}
   const lines: string[] = []
   const firstCredit = data.credits[0]
 
-  lines.push(`Codex has ${paint.yellow(String(data.availableCredits))} reset ${plural(data.availableCredits, 'credit', 'credits')}.`)
-  lines.push('')
+  lines.push(`Codex reset credits: ${paint.green(String(data.availableCredits))}`)
 
   if (firstCredit) {
-    lines.push(`Next one expires ${paint.red(formatLocalDateTime(firstCredit.expiresAt))}`)
-    lines.push(`${formatTimeLeft(firstCredit.expiresAt)} left`)
+    lines.push('')
+    lines.push('Next expiry')
+    lines.push(`  ${paint.dim('at')}    ${paint.red(formatLocalDateTime(firstCredit.expiresAt))}`)
+    lines.push(`  ${paint.dim('in')}    ${formatTimeLeft(firstCredit.expiresAt)}`)
   }
   else {
+    lines.push('')
     lines.push('No reset credits are available.')
   }
 
   if (data.credits.length > 0) {
     lines.push('')
+    lines.push('All credits')
     data.credits.forEach((credit, index) => {
       const number = String(index + 1).padStart(2, '0')
-      const granted = formatLocalDateTime(credit.grantedAt)
-      const expires = paint.cyan(formatLocalDateTime(credit.expiresAt))
-      lines.push(`${number}  ${granted} -> ${expires}`)
+      const granted = formatLocalDateTimeWithoutZone(credit.grantedAt)
+      const expires = formatLocalDateTimeWithoutZone(credit.expiresAt)
+      lines.push(`  ${paint.dim(number)}    ${granted}  -  ${expires}`)
     })
   }
 
-  const usage = renderUsage(data, paint.yellow)
-  if (usage) {
+  const usage = renderUsage(data, paint.yellow, paint.dim)
+  if (usage.length > 0) {
     lines.push('')
-    lines.push(usage)
+    lines.push('Usage windows')
+    lines.push(...usage)
   }
 
   return `${lines.join('\n')}\n`
 }
 
-function renderUsage(data: CodexUsage, yellow: (value: string) => string) {
-  const parts = [
-    renderUsageWindow('5h', data.usage.primary, yellow),
-    renderUsageWindow('7d', data.usage.secondary, yellow),
+function renderUsage(
+  data: CodexUsage,
+  yellow: (value: string) => string,
+  dim: (value: string) => string,
+) {
+  return [
+    renderUsageWindow('5h', data.usage.primary, yellow, dim),
+    renderUsageWindow('7d', data.usage.secondary, yellow, dim),
   ].filter(Boolean)
-
-  return parts.length > 0 ? `Usage: ${parts.join(', ')}` : ''
 }
 
-function renderUsageWindow(label: string, window: UsageWindow | null, yellow: (value: string) => string) {
+function renderUsageWindow(
+  label: string,
+  window: UsageWindow | null,
+  yellow: (value: string) => string,
+  dim: (value: string) => string,
+) {
   if (!window)
     return ''
 
   const percent = window.usedPercent === null ? 'unknown' : `${Math.max(0, Math.round(100 - window.usedPercent))}%`
-  const reset = window.resetsAt ? `, resets in ${yellow(formatTimeLeft(window.resetsAt))}` : ''
+  const reset = window.resetsAt ? `    resets in ${yellow(formatTimeLeft(window.resetsAt))}` : ''
 
-  return `${label} ${yellow(percent)} left${reset}`
+  return `  ${dim(label)}    ${yellow(percent)} left${reset}`
 }

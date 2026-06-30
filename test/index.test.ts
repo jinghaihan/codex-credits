@@ -102,16 +102,20 @@ describe('renderCodexCredits', () => {
     )
 
     expect(renderCodexCredits(data, { color: false })).toMatchInlineSnapshot(`
-      "Codex has 3 reset credits.
+      "Codex reset credits: 3
 
-      Next one expires 2026-07-12 10:09:26 GMT+8
-      11d 13h left
+      Next expiry
+        at    2026-07-12 10:09:26 GMT+8
+        in    11d 13h
 
-      01  2026-06-12 10:09:26 GMT+8 -> 2026-07-12 10:09:26 GMT+8
-      02  2026-06-18 08:37:46 GMT+8 -> 2026-07-18 08:37:46 GMT+8
-      03  2026-06-27 07:48:09 GMT+8 -> 2026-07-27 07:48:09 GMT+8
+      All credits
+        01    2026-06-12 10:09:26  -  2026-07-12 10:09:26
+        02    2026-06-18 08:37:46  -  2026-07-18 08:37:46
+        03    2026-06-27 07:48:09  -  2026-07-27 07:48:09
 
-      Usage: 5h 97% left, resets in 4h 36m, 7d 80% left, resets in 6d 13h
+      Usage windows
+        5h    97% left    resets in 4h 36m
+        7d    80% left    resets in 6d 13h
       "
     `)
   })

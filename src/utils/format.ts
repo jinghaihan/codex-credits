@@ -1,6 +1,16 @@
 import { pad2 } from './text'
 
 export function formatLocalDateTime(date: Date) {
+  const values = getLocalDateTimeParts(date)
+
+  return `${values.dateTime} ${values.timeZoneName}`
+}
+
+export function formatLocalDateTimeWithoutZone(date: Date) {
+  return getLocalDateTimeParts(date).dateTime
+}
+
+function getLocalDateTimeParts(date: Date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     day: '2-digit',
     hour: '2-digit',
@@ -14,7 +24,10 @@ export function formatLocalDateTime(date: Date) {
 
   const values = Object.fromEntries(parts.map(part => [part.type, part.value]))
 
-  return `${values.year}-${values.month}-${values.day} ${normalizeHour(values.hour)}:${values.minute}:${values.second} ${values.timeZoneName}`
+  return {
+    dateTime: `${values.year}-${values.month}-${values.day} ${normalizeHour(values.hour)}:${values.minute}:${values.second}`,
+    timeZoneName: values.timeZoneName,
+  }
 }
 
 export function formatTimeLeft(date: Date, now = new Date()) {
