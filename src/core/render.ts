@@ -1,6 +1,12 @@
-import type { CodexUsage, RenderOptions, UsageWindow } from '../types'
+import type { CodexUsage, Paint, RenderOptions, UsageWindow } from '../types'
 import c from 'ansis'
-import { formatLocalDateTime, formatLocalDateTimeWithoutZone, formatTimeLeft } from '../utils'
+import {
+  formatLocalDateTime,
+  formatLocalDateTimeWithoutZone,
+  formatTimeLeft,
+  paintCreditTimeLeft,
+  paintUsageLeftPercent,
+} from '../utils'
 
 export function renderCodexCredits(data: CodexUsage, options: RenderOptions = {}) {
   const color = options.color ?? true
@@ -9,6 +15,7 @@ export function renderCodexCredits(data: CodexUsage, options: RenderOptions = {}
     green: (value: string) => color ? c.green(value) : value,
     red: (value: string) => color ? c.red(value) : value,
     yellow: (value: string) => color ? c.yellow(value) : value,
+    cyan: (value: string) => color ? c.cyan(value) : value,
   }
 
   const lines: string[] = []
@@ -20,7 +27,7 @@ export function renderCodexCredits(data: CodexUsage, options: RenderOptions = {}
     lines.push('')
     lines.push('Next expiry')
     lines.push(`  ${paint.dim('at')}    ${paint.red(formatLocalDateTime(firstCredit.expiresAt))}`)
-    lines.push(`  ${paint.dim('in')}    ${formatTimeLeft(firstCredit.expiresAt)}`)
+    lines.push(`  ${paint.dim('in')}    ${paintCreditTimeLeft(firstCredit.expiresAt, paint)}`)
   }
   else {
     lines.push('')
@@ -38,7 +45,7 @@ export function renderCodexCredits(data: CodexUsage, options: RenderOptions = {}
     })
   }
 
-  const usage = renderUsage(data, paint.yellow, paint.dim)
+  const usage = renderUsage(data, paint)
   if (usage.length > 0) {
     lines.push('')
     lines.push('Usage windows')
@@ -50,26 +57,26 @@ export function renderCodexCredits(data: CodexUsage, options: RenderOptions = {}
 
 function renderUsage(
   data: CodexUsage,
-  yellow: (value: string) => string,
-  dim: (value: string) => string,
+  paint: Paint,
 ) {
   return [
-    renderUsageWindow('5h', data.usage.primary, yellow, dim),
-    renderUsageWindow('7d', data.usage.secondary, yellow, dim),
+    renderUsageWindow('5h', data.usage.primary, paint),
+    renderUsageWindow('7d', data.usage.secondary, paint),
   ].filter(Boolean)
 }
 
 function renderUsageWindow(
   label: string,
   window: UsageWindow | null,
-  yellow: (value: string) => string,
-  dim: (value: string) => string,
+  paint: Paint,
 ) {
   if (!window)
     return ''
 
-  const percent = window.usedPercent === null ? 'unknown' : `${Math.max(0, Math.round(100 - window.usedPercent))}%`
-  const reset = window.resetsAt ? `    resets in ${yellow(formatTimeLeft(window.resetsAt))}` : ''
+  const percent = window.usedPercent === null
+    ? paint.dim('unknown')
+    : paintUsageLeftPercent(Math.max(0, Math.round(100 - window.usedPercent)), paint)
+  const reset = window.resetsAt ? `    resets in ${paint.cyan(formatTimeLeft(window.resetsAt))}` : ''
 
-  return `  ${dim(label)}    ${yellow(percent)} left${reset}`
+  return `  ${paint.dim(label)}    ${percent} left${reset}`
 }

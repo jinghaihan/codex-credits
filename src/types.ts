@@ -54,4 +54,12 @@ export interface RenderOptions {
   color?: boolean
 }
 
+export interface Paint {
+  dim: (value: string) => string
+  green: (value: string) => string
+  red: (value: string) => string
+  yellow: (value: string) => string
+  cyan: (value: string) => string
+}
+
 export type FetchJson = (path: string, auth: AuthFile) => Promise<unknown>
