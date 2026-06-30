@@ -1,26 +1,29 @@
 packages: []
+allowBuilds:
+  esbuild: true
+  simple-git-hooks: true
 catalogs:
   build:
-    tsdown: ^0.21.10
+    tsdown: ^0.22.3
   dev:
-    bumpp: ^11.0.1
+    bumpp: ^11.1.0
     pncat: ^0.12.0
     simple-git-hooks: ^2.13.1
-    taze: ^19.11.0
-    tsx: ^4.21.0
+    taze: ^19.14.1
+    tsx: ^4.22.4
     typescript: ^6.0.3
   lint:
-    '@octohash/eslint-config': ^0.3.2
-    eslint: ^10.2.1
-    lint-staged: ^16.4.0
+    '@octohash/eslint-config': ^0.4.1
+    eslint: ^10.6.0
+    lint-staged: ^17.0.8
   prod:
-    ansis: ^4.2.0
+    ansis: ^4.3.1
     cac: ^7.0.0
-    undici: ^6.27.0
+    undici: ^8.5.0
   test:
-    vitest: ^4.1.5
+    vitest: ^4.1.9
   types:
-    '@types/node': ^25.6.0
+    '@types/node': ^26.0.1
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks
